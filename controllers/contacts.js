@@ -3,7 +3,16 @@ const { sendSuccessRes } = require("../utils");
 const { Contact } = require("../models");
 
 const getContactsList = async (req, res) => {
-  const result = await Contact.find({});
+  const result = await Contact.find({}, "_id name email favorite owner");
+  sendSuccessRes(res, { result });
+};
+
+const getContactsListByUser = async (req, res) => {
+  const { _id } = req.user;
+  const result = await Contact.find(
+    { owner: _id },
+    "_id name email favorite owner"
+  );
   sendSuccessRes(res, { result });
 };
 
@@ -19,7 +28,8 @@ const getContactById = async (req, res) => {
 };
 
 const addContact = async (req, res) => {
-  const result = await Contact.create(req.body);
+  const newContact = { ...req.body, owner: req.user._id };
+  const result = await Contact.create(newContact);
   sendSuccessRes(res, { result }, 201);
 };
 
@@ -65,6 +75,7 @@ const updateFavorite = async (req, res, next) => {
 
 module.exports = {
   getContactsList,
+  getContactsListByUser,
   getContactById,
   addContact,
   removeById,
