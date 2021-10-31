@@ -3,6 +3,11 @@ const { BadRequest } = require("http-errors");
 const { sendEmail } = require("../../utils");
 
 const reVerification = async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    throw new BadRequest("Missing required field email");
+  }
+
   const user = await User.findOne({ email });
   const { verify, verifyToken } = user;
 
