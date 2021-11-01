@@ -6,10 +6,15 @@ const { NotFound, BadRequest } = require("http-errors");
 
 const login = async (req, res) => {
   const { email, password } = req.body;
-  const user = await User.findOne({ email }, "_id email password");
+  const user = await User.findOne({ email }, "_id email password verify");
 
   if (!user || !user.comparePassword(password)) {
     throw new BadRequest("Invalid email or password");
+  }
+
+  console.log(user);
+  if (!user.verify) {
+    throw new BadRequest("Email not verify");
   }
 
   // if (!user) {
